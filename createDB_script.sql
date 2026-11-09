@@ -1,7 +1,7 @@
 /*-------------------------------------
  Data Base UEFA Champions League
 --------------------------------------*/
---Ordenado por referencias
+-- Ordenado por referencias
 
 CREATE DATABASE IF NOT EXISTS UEFA_DB; USE UEFA_DB;
 
