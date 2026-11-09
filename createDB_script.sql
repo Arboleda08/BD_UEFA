@@ -1,6 +1,7 @@
 /*-------------------------------------
  Data Base UEFA Champions League
 --------------------------------------*/
+--Ordenado por referencias
 
 CREATE DATABASE IF NOT EXISTS UEFA_DB; USE UEFA_DB;
 
@@ -41,11 +42,8 @@ CREATE TABLE IF NOT EXISTS estadio
   id_pais CHAR(3), FOREIGN KEY (id_pais) REFERENCES pais(id_pais) ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS partido 
-  ( id_partido INT PRIMARY KEY, 
+  ( num_partido  SMALLINT UNSIGNED PRIMARY KEY, 
   fecha_hora TIMESTAMP NOT NULL, 
-  id_estadio INT, 
-  id_equipo_local INT, 
-  id_equipo_visitante INT, 
   goles_local TINYINT UNSIGNED DEFAULT 0, 
   goles_visitante TINYINT UNSIGNED DEFAULT 0, 
   es_eliminatoria BOOLEAN DEFAULT FALSE, 
@@ -53,41 +51,33 @@ CREATE TABLE IF NOT EXISTS partido
   penales_local TINYINT UNSIGNED DEFAULT 0, 
   penales_visitante TINYINT UNSIGNED DEFAULT 0, temporada INT NOT NULL, 
   -- Foreign Keys
-  FOREIGN KEY (id_estadio) REFERENCES estadio(id_estadio), 
-  FOREIGN KEY (id_equipo_local) REFERENCES equipo(id_equipo), 
-  FOREIGN KEY (id_equipo_visitante) REFERENCES equipo(id_equipo) ) ENGINE=InnoDB
+  id_estadio CHAR(5), FOREIGN KEY (id_estadio) REFERENCES estadio(id_estadio), 
+  id_equipo_local CHAR(5), FOREIGN KEY (id_equipo_local) REFERENCES equipo(id_equipo), 
+  id_equipo_visitante CHAR(5), FOREIGN KEY (id_equipo_visitante) REFERENCES equipo(id_equipo) ) ENGINE=InnoDB
   -- Extra verifications
   CHECK (id_equipo_local <> id_equipo_visitante);
 
 CREATE TABLE IF NOT EXISTS arbitro 
-  ( id_arbitro INT PRIMARY KEY, 
-  nombre VARCHAR(100) NOT NULL, 
-  id_pais CHAR(3), 
+  ( id_arbitro CHAR(5) PRIMARY KEY, CHECK(id_arbitro REGEXP '^[0,9]+$') 
+  nombre VARCHAR(100) NOT NULL,
   -- Foreign Keys
-  FOREIGN KEY (id_pais) REFERENCES pais(id_pais) ) ENGINE=InnoDB;
+  id_pais CHAR(3), FOREIGN KEY (id_pais) REFERENCES pais(id_pais) ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS asignacion_arbitral 
-  ( id_partido INT NOT NULL,
-  id_arbitro INT NOT NULL, 
-  rol VARCHAR(24) NOT NULL, 
-  PRIMARY KEY (id_partido, id_arbitro),
+  ( rol VARCHAR(24) NOT NULL, 
+  PRIMARY KEY (num_partido, id_arbitro),
   -- Foreign Keys
-  FOREIGN KEY (id_partido) REFERENCES partido(id_partido),
-  FOREIGN KEY (id_arbitro) REFERENCES arbitro(id_arbitro),
+  num_partido SMALLINT, FOREIGN KEY (num_partido) REFERENCES partido(num_partido),
+  id_arbitro CHAR(5), FOREIGN KEY (id_arbitro) REFERENCES arbitro(id_arbitro),
   --Extra verifications
-  CONSTRAINT uk_partido_rol UNIQUE (id_partido, rol) ) ENGINE=InnoDB;
+  CONSTRAINT uk_partido_rol UNIQUE (num_partido, rol) ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS evento 
-  ( id_evento INT PRIMARY KEY, 
-  id_partido INT NOT NULL, 
+  ( num_evento SMALLINT UNSIGNED PRIMARY KEY, 
   tipo_evento VARCHAR(24) NOT NULL, 
   periodo VARCHAR(8) NOT NULL, 
-  minuto TINYINT UNSIGNED, 
-  minuto_adicional TINYINT UNSIGNED, 
-  orden SMALLINT UNSIGNED, 
-  resultado VARCHAR(16), 
-  observaciones TEXT, 
+  minuto TINYINT UNSIGNED NOT NULL,
+  resultado VARCHAR(24), 
+  observaciones VARCHAR(100), 
   -- Foreign Keys
-  FOREIGN KEY (id_partido) REFERENCES partido(id_partido),
-  --Extra Verifications
-  CONSTRAINT uk_partido_orden UNIQUE (id_partido, orden) ) ENGINE=InnoDB;
+  num_partido SMALLINT, FOREIGN KEY (num_partido) REFERENCES partido(num_partido) ) ENGINE=InnoDB;
