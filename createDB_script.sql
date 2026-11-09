@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS director_tecnico
   id_pais CHAR(3), FOREIGN KEY (id_pais) REFERENCES pais(id_pais) ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS equipo 
-  ( id_equipo CHAR(3) PRIMARY KEY, CHECK(id_equipo REGEXP '^[a-z]+$'),
+  ( id_equipo CHAR(3) PRIMARY KEY, CHECK(id_equipo REGEXP '^[A-Z]+$'),
   nombre VARCHAR(80) NOT NULL, 
   dir_escudo VARCHAR(100), 
   en_competencia BOOLEAN DEFAULT TRUE, 
